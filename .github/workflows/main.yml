@@ -7,7 +7,7 @@ env:
   #UNITY_VERSION: 2021.3.17f1
 
 jobs:
-  build-pc:
+  build-standalone:
     name: Build my project for ${{ matrix.targetPlatform }} ✨
     runs-on: ubuntu-latest
     strategy:

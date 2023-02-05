@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  #UNITY_VERSION: 2020.1.17f1-ios-0
+  #UNITY_VERSION: 2021.3.17f1
 
 jobs:
   build:
@@ -17,9 +17,6 @@ jobs:
           - WebGL
           - StandaloneOSX
           - StandaloneWindows64
-          #Android
-          #iOS
-          #StandaloneLinux64
     steps:
       # Checkout
       - name: Checkout repository
@@ -35,12 +32,6 @@ jobs:
           restore-keys: |
             Library-
 
-      # Test
-      # - name: Run tests
-      #   uses: game-ci/unity-test-runner@v2
-      #   with:
-      #     githubToken: ${{ secrets.GITHUB_TOKEN }}
-
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v2
@@ -49,10 +40,6 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
-          # unityVersion: 2021.3.17f1
-          # unityVersion: auto
-          # customImage: 'unityci/editor:ubuntu-2021.3.17f1-webgl-1.0.1'
-          # buildName: helloWorld
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -66,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - uses: actions/download-artifact@v2
         with:
@@ -78,7 +65,8 @@ jobs:
         working-directory: build/WebGL
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: build/WebGL
+          target-folder: .

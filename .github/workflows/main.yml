@@ -7,13 +7,14 @@ env:
   #UNITY_VERSION: 2021.3.17f1
 
 jobs:
-  build-standalone:
+  build:
     name: Build my project for ${{ matrix.targetPlatform }} ✨
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         targetPlatform:
+          - WebGL
           - StandaloneOSX
           - StandaloneWindows64
           - StandaloneLinux64
@@ -48,42 +49,8 @@ jobs:
           name: HelloWorld-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
-  build-webgl:
-    name: Build my project for WebGL ✨
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-
-      # Cache
-      - uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-WebGL
-          restore-keys: |
-            Library-
-
-      # Build
-      - name: Build project
-        id: build-WebGL
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: WebGL
-
-      # Output
-      - uses: actions/upload-artifact@v3
-        with:
-          name: HelloWorld-WebGL
-          path: build/WebGL
-
   deployToPages:
-    needs: build-webgl
+    needs: build-WebGL
     name: Deploy to Github Pages
     runs-on: ubuntu-latest
     steps:

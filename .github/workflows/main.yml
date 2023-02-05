@@ -7,25 +7,25 @@ env:
   #UNITY_VERSION: 2021.3.17f1
 
 jobs:
-  build:
+  build-pc:
     name: Build my project for ${{ matrix.targetPlatform }} ✨
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         targetPlatform:
-          - WebGL
           - StandaloneOSX
           - StandaloneWindows64
+          - StandaloneLinux64
     steps:
       # Checkout
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: true
 
       # Cache
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: Library
           key: Library-${{ matrix.targetPlatform }}
@@ -34,6 +34,7 @@ jobs:
 
       # Build
       - name: Build project
+        id: build-${{ matrix.targetPlatform }}
         uses: game-ci/unity-builder@v2
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -42,20 +43,54 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
 
       # Output
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: HelloWorld-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
+  build-webgl:
+    name: Build my project for WebGL ✨
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      # Cache
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-WebGL
+          restore-keys: |
+            Library-
+
+      # Build
+      - name: Build project
+        id: build-WebGL
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+
+      # Output
+      - uses: actions/upload-artifact@v3
+        with:
+          name: HelloWorld-WebGL
+          path: build/WebGL
+
   deployToPages:
-    needs: build
+    needs: build-webgl
     name: Deploy to Github Pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: HelloWorld-WebGL
           path: build/WebGL

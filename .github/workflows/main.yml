@@ -84,7 +84,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: HelloWorld-${{ matrix.targetPlatform }}
-          path: build
+          path: build/${{ matrix.targetPlatform }}
 
   deployToPages:
     needs: build-WebGL
@@ -107,5 +107,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: build/WebGL
+          folder: build/WebGL/WebGL
           target-folder: .
